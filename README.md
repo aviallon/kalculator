@@ -27,9 +27,9 @@ make run
 - [X] `float`s display and manipulation
 - [X] Stack helper
 - [X] NPI evaluator
-- [] Error handling
-- [] Shunting yard algorithm
-- [] User input and interface
-- [] Common functions (sin, cos, log, etc.)
-- [] Optimisation for speed
-- [] Upstreaming some very functions to KnightOS libs.
+- [ ] Error handling
+- [ ] Shunting yard algorithm
+- [ ] User input and interface
+- [ ] Common functions (sin, cos, log, etc.)
+- [ ] Optimisation for speed
+- [ ] Upstreaming some very functions to KnightOS libs.
