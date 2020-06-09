@@ -4,7 +4,9 @@
 #include <string.h>
 #include <knightos/display.h>
 
-#define TIMEOUT 10
+#define TIMEOUT 150
+
+#ifndef DISABLE_DEBUG
 
 #define debug_hinted(screen, msg, hint, draw_func) \
 { \
@@ -25,6 +27,12 @@
     } \
     screen_clear(screen); \
 }
+
+#else
+
+#define debug_hinted(screen, msg, hint, draw_func)
+
+#endif
 
 #define debug(screen, msg, draw_func) debug_hinted(screen, msg, "", draw_func)
 

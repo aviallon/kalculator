@@ -17,7 +17,7 @@ void draw_signed(SCREEN* screen, unsigned char x, unsigned char y, signed int va
 
 unsigned log10u (unsigned x);
 
-#define PI 3.141592653589793
+//#define PI 3.141592653589793
 #define E 2.718281828459045
 
 #endif

@@ -34,11 +34,6 @@ float strtof (unsigned char* str, char** endptr) {
         }
         
         c = c - '0';
-//         if (result > (FLOAT_MAX/base - c)) {
-//             overflow = true;
-//             ptr += 1;
-//             continue;
-//         }
         result = result * 10 + c;
         ptr += 1;
     }
@@ -78,6 +73,9 @@ float strtof (unsigned char* str, char** endptr) {
     
     if(is_neg)
         result = -result;
+    
+    if (endptr != 0)
+        *endptr = ptr;
     
     return result;
 }

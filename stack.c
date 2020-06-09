@@ -17,7 +17,34 @@ struct Stack* createStack(int capacity)
 bool isFull(struct Stack* stack) 
 { 
     return stack->top == stack->capacity - 1; 
-} 
+}
+
+void freeStack(struct Stack* stack){
+    free(stack->array);
+    free(stack);
+}
+
+void clear(struct Stack* stack){
+    stack->top = -1;
+}
+
+void reverse(struct Stack* stack){
+    unsigned i=0;
+    unsigned len = 0;
+    STACK_ELEMENT* temp_ptr;
+    if(isEmpty(stack))
+        return;
+
+    temp_ptr = malloc(sizeof(STACK_ELEMENT));
+    len = length(stack);
+    for(i=0; i<len/2; i++){
+        memcpy(temp_ptr, stack->array + i, sizeof(STACK_ELEMENT)); //temp_ptr = stack->array[i];
+        memcpy(stack->array + i, stack->array + len - i - 1, sizeof(STACK_ELEMENT)); //stack->array[i] = stack->array[len-i-1];
+        memcpy(stack->array + len - i - 1, temp_ptr, sizeof(STACK_ELEMENT)); // stack->array[len-i-1] = temp_ptr;
+    }
+    free(temp_ptr);
+    return;
+}
   
 // Stack is empty when top is equal to -1 
 bool isEmpty(struct Stack* stack) 

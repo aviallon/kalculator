@@ -10,7 +10,7 @@ enum Operator {
     NONE,
     ADD,
     SUB,
-    MULT,
+    MUL,
     DIV,
 };
 typedef enum Operator Operator;

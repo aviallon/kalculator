@@ -29,6 +29,12 @@ bool isEmpty(struct Stack* stack);
 
 bool push(struct Stack* stack, STACK_ELEMENT* item);
 
+void clear(struct Stack* stack);
+
+void freeStack(struct Stack* stack);
+
+void reverse(struct Stack* stack);
+
 STACK_ELEMENT* pop(struct Stack* stack);
 
 STACK_ELEMENT* peek(struct Stack* stack);
