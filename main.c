@@ -148,6 +148,8 @@ int tokenizer(Stack *stack, SCREEN* screen, unsigned char* input){
             switch (tokenType){
                 case NUMBER:
                     strncpy(token_str, input + begin, n);
+                    token_str[n] = '\0'; /* Work around strncpy bug */
+
                     number = strtof(token_str, NULL);
                     debug_float_hinted(screen, number, "Num:");
                     push_num(stack, number);
@@ -397,8 +399,6 @@ void main() {
         if(i%15 < 8)
             invert_pixel(screen, DISPLAY_WIDTH-2, 7);
         //draw_short(screen, 2, 8*2, i);
-        //draw_string(screen, 24, 8*2, "STK:");
-        //draw_short(screen, 24+4*4, 8*2, length(stk));
 
         draw_string(screen, 2, 8*4, "Res:");
         draw_float(screen, 2 + 4*4, 8*4, number);
@@ -412,6 +412,8 @@ void main() {
         draw_short(screen, 2, 8*2, key);
         draw_char(screen, 2 + 3*4, 8*2, '=');
         draw_char(screen, 2+4*4, 8*2, chr);
+        draw_string(screen, 2+5*4 + 20, 8*2, "STK:");
+        draw_short(screen, 2+5*4 + 20 + 4*4, 8*2, length(stk));
 #endif
 
         screen_draw(screen);
