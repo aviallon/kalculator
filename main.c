@@ -334,7 +334,7 @@ void main() {
     stk = createStack(STACK_SIZE);
     
     str = malloc(len);
-    str[0] = CURSOR_CHR;
+    str[0] = '\0';
     for(i2=1; i2<len-1; i2++){
         str[i2] = '\0';
     }
@@ -370,8 +370,8 @@ void main() {
         if (key == KEY_DEL) {
             if (cursor > 0 && del_num%5 == 0){
                 cursor -= 1;
-                str[cursor] = CURSOR_CHR;
-                str[cursor+1] = '\0';
+                str[cursor] = '\0';
+                //str[cursor+1] = '\0';
                 del_num = 0;
             }
             del_num += 1;
@@ -389,7 +389,6 @@ void main() {
             chr = get_char(key);
             if(chr != INT_MAX && cursor < len && chr != last_key){
                 str[cursor] = chr;
-                str[cursor+1] = CURSOR_CHR;
                 cursor += 1;
             }
         }
@@ -403,7 +402,11 @@ void main() {
 
         draw_string(screen, 2, 8*4, "Res:");
         draw_float(screen, 2 + 4*4, 8*4, number);
+
+
         draw_string(screen, 2, 8*6, str);
+        if(i%40 < 20)
+            draw_char(screen, 2 + 4*cursor, 8*6, '_');
 
 #ifndef DISABLE_DEBUG
         draw_short(screen, 2, 8*2, key);
