@@ -4,7 +4,7 @@ include .knightos/variables.make
 
 HEADERS:=$(wildcard *.h)
 SOURCES:=$(wildcard *.c)
-CFLAGS:=--std-c99 --opt-code-speed
+CFLAGS:=--std-c99 --no-optsdcc-in-asm --fno-omit-frame-pointer --no-peep ${DEBUG}
 
 ALL_TARGETS:=$(BIN)calculator
 

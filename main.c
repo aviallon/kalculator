@@ -16,7 +16,7 @@
 #include "stack.h"
 #include "lib.h"
 
-#define DISABLE_DEBUG
+//#define DISABLE_DEBUG
 
 #include "debug.h"
 #include "consts.h"
@@ -169,6 +169,7 @@ int tokenizer(Stack *stack, SCREEN* screen, unsigned char* input){
     return true;
 }
 
+/*
 int shunting_yard(Stack *stack, SCREEN* screen){
     Operator op;
     Token temp;
@@ -177,7 +178,7 @@ int shunting_yard(Stack *stack, SCREEN* screen){
     Stack* first_stack;
 
     return true;
-}
+}*/
 
 int eval(Stack *stack, SCREEN* screen){
     Token* op1;
@@ -205,7 +206,7 @@ int eval(Stack *stack, SCREEN* screen){
         debug_float_hinted(screen, op2->x, "op2:");
         
         pop_el(stack, operateur);
-        debug_hinted(screen, operateur->op, "Operator:", draw_short);
+        debug_hinted(screen, getCharFromOperator(operateur->op), "Operator:", draw_char);
         
         switch(operateur->op){
             case ADD:
@@ -229,7 +230,7 @@ int eval(Stack *stack, SCREEN* screen){
     return 1;
 }
 
-bool clockSupported() __naked {
+/*bool clockSupported() __naked {
     __asm
     ld iy,#2
     add iy, sp
@@ -255,7 +256,7 @@ short getTimeInTicks() __naked {
     
     ret
     __endasm;
-}
+}*/
 
 unsigned get_char(unsigned char keycode) {
     switch(keycode){
@@ -414,5 +415,5 @@ void main() {
     }
 
     freeStack(stk);
-    free(screen);
+    //free(screen);
 }
