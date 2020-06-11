@@ -303,10 +303,22 @@ unsigned get_char(unsigned char keycode) {
     return INT_MAX;
 }
 
+unsigned filter_char(unsigned char chr){
+    if(
+            (chr >= '0' && chr <= '9') ||
+                    (chr == '.') ||
+                    (chr == '*' || chr == '/' || chr == '-' || chr == '+') ||
+                    (chr == ' ' || chr == '\x08')
+            ) {
+        return chr;
+    }
+    return INT_MAX;
+}
+
 #define CURSOR_CHR '_'/*127*/ /*178*/
 
 void main() {
-	SCREEN *screen;
+    SCREEN *screen;
     unsigned short i = 0;
     unsigned i2 = 0;
     unsigned cursor = 0;
@@ -324,7 +336,7 @@ void main() {
     
     Stack* stk;
     
-    // must be used before any other statement which is not a variable declaration...
+    // must be used before the library is used, and good practice is to load it immediately on startup...
     load_library("/lib/core");
     
     get_lcd_lock();
@@ -368,8 +380,17 @@ void main() {
         i++;
         prepare(screen);
         key = app_get_key(&_);
-        
-        if (key == KEY_DEL) {
+
+        if (key == KEY_CLEAR) {
+            if (del_num > 20) {
+                for(i2 = 0; i2 < cursor; i2++)
+                    str[i2] = '\0';
+                cursor = 0;
+                str[0] = '\0';
+                del_num = 0;
+            }
+            del_num += 1;
+        } else if (key == KEY_DEL) {
             if (cursor > 0 && del_num%5 == 0){
                 cursor -= 1;
                 str[cursor] = '\0';
@@ -388,7 +409,8 @@ void main() {
             }
         } else {
             last_key = chr;
-            chr = get_char(key);
+            //chr = get_char(key);
+            chr = filter_char(get_character_input(&_));
             if(chr != INT_MAX && cursor < len && chr != last_key){
                 str[cursor] = chr;
                 cursor += 1;
@@ -419,6 +441,7 @@ void main() {
         screen_draw(screen);
     }
 
+    free(str);
     freeStack(stk);
-    //free(screen);
+    free(screen);
 }
