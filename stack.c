@@ -9,7 +9,7 @@ struct Stack* createStack(int capacity)
     struct Stack* stack = (Stack*)malloc(sizeof(Stack)); 
     stack->capacity = capacity; 
     stack->top = -1;
-    stack->array = malloc(capacity * STACK_ELEMENT_SIZE); 
+    stack->array = (STACK_ELEMENT*)malloc(capacity * STACK_ELEMENT_SIZE);
     return stack; 
 } 
   

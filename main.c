@@ -13,14 +13,14 @@
 #include <math.h>
 #include <kernel.h>
 
+#include "consts.h"
+
 #include "stack.h"
 #include "lib.h"
 
 //#define DISABLE_DEBUG
 
 #include "debug.h"
-#include "consts.h"
-
 
 // temp must be a "token" variable
 #define push_num(stack, num) \
@@ -101,16 +101,17 @@ int tokenizer(Stack *stack, SCREEN* screen, unsigned char* input){
     Token temp;
     unsigned begin = 0;
     unsigned n = 1;
-    float number;
+    Num number;
     enum TokenType tokenType = UNKNOWN;
     enum TokenType charTokenType;
     enum TokenType lookaheadTokenType;
     unsigned char c = '\0';
     unsigned char lookahead_c = '\0';
-    unsigned char *token_str;
+
+    // Don't malloc this string if you don't want trouble !
+    unsigned char token_str[32] = "";
 
     size_t input_len = strlen(input);
-    token_str = malloc(32);
 
     tokenType = getTokenType(input[0]);
 
@@ -150,8 +151,8 @@ int tokenizer(Stack *stack, SCREEN* screen, unsigned char* input){
                     strncpy(token_str, input + begin, n);
                     token_str[n] = '\0'; /* Work around strncpy bug */
 
-                    number = strtof(token_str, NULL);
-                    debug_float_hinted(screen, number, "Num:");
+                    number = strtonum(token_str, NULL);
+                    debug_hinted(screen, number, "Num:", DRAW_NUM);
                     push_num(stack, number);
                     break;
                 case OPERATOR:
@@ -167,7 +168,6 @@ int tokenizer(Stack *stack, SCREEN* screen, unsigned char* input){
         }
     }
 
-    free(token_str);
     return true;
 }
 
@@ -182,52 +182,69 @@ int shunting_yard(Stack *stack, SCREEN* screen){
     return true;
 }*/
 
-int eval(Stack *stack, SCREEN* screen){
-    Token* op1;
-    Token* op2;
-    Token* operateur;
-    Token* temp;
-    
+int eval(Stack *input_stack, Stack *output_stack, SCREEN* screen){
+    Token op1;
+    Token op2;
+    Token operateur;
+    Token temp;
+    Num res = 0;
     unsigned i = 0;
+
+    //temp = malloc(sizeof(Token));
+    temp.op = NONE;
+    temp.x = 0;
     
-    op1 = malloc(sizeof(Token));
-    op2 = malloc(sizeof(Token));
-    operateur = malloc(sizeof(Token));
-    temp = malloc(sizeof(Token));
+    //op1 = malloc(sizeof(Token));
+    //op2 = malloc(sizeof(Token));
+    //operateur = malloc(sizeof(Token));
 
-    temp->op = NONE;
+    debug_hinted(screen, length(input_stack), "Eval stack:", draw_short);
 
-    while (length(stack) > 2){
-
+    while (length(input_stack) > 0){
         i++;
-        
-        pop_el(stack, op1);
-        debug_float_hinted(screen, op1->x, "op1:");
-        
-        pop_el(stack, op2);
-        debug_float_hinted(screen, op2->x, "op2:");
-        
-        pop_el(stack, operateur);
-        debug_hinted(screen, getCharFromOperator(operateur->op), "Operator:", draw_char);
-        
-        switch(operateur->op){
-            case ADD:
-                temp->x = op1->x + op2->x;
-                break;
-            case SUB:
-                temp->x = op1->x - op2->x;
-                break;
-            case MUL:
-                temp->x = op1->x * op2->x;
-                break;
-            case DIV:
-                temp->x = op1->x / op2->x;
-                break;
-            default:
-                return 0;
+
+        pop_el(input_stack, &operateur);
+        if(operateur.op == NONE){
+            push(output_stack, &operateur);
+        } else {
+
+            if(length(output_stack) >= 2) {
+                pop_el(output_stack, &op2);
+                debug_hinted(screen, op2.x, "op1:", DRAW_NUM);
+
+                pop_el(output_stack, &op1);
+                debug_hinted(screen, op1.x, "op2:", DRAW_NUM);
+
+                debug_hinted(screen, getCharFromOperator(operateur.op), "Operator:", draw_char);
+
+                switch(operateur.op){
+                    case ADD:
+                        res = op1.x + op2.x;
+                        break;
+                    case SUB:
+                        res = op1.x - op2.x;
+                        break;
+                    case MUL:
+                        res = op1.x * op2.x;
+                        break;
+                    case DIV:
+                        res = op1.x / op2.x;
+                        break;
+                    default:
+                        return 0;
+                }
+                debug_hinted(screen, res, "Result:", DRAW_NUM);
+                push_num(output_stack, res);
+            } else {
+                // Error !
+                debug_hinted(screen, getCharFromOperator(operateur.op), "Needs two nums:", draw_char);
+                return false;
+            }
         }
-        debug_float_hinted(screen, temp->x, "Result:");
-        push(stack, temp);
+        
+
+        
+        /*pop_el(stack, &operateur); */
     }
     return 1;
 }
@@ -331,10 +348,10 @@ void main() {
     unsigned char _;
     unsigned char key;
     Token temp = {0, NONE};
-    const unsigned short STACK_SIZE = 16;
     bool success = false;
     
     Stack* stk;
+    Stack* numstk;
     
     // must be used before the library is used, and good practice is to load it immediately on startup...
     load_library("/lib/core");
@@ -345,7 +362,8 @@ void main() {
     
     debug_str(screen, "DEBUG MODE");
     
-    stk = createStack(STACK_SIZE);
+    stk = createStack(STACK_MAX);
+    numstk = createStack(STACK_MAX);
     
     str = malloc(len);
     str[0] = '\0';
@@ -353,6 +371,11 @@ void main() {
         str[i2] = '\0';
     }
     str[len-1] = '\0';
+
+#ifndef DISABLE_DEBUG
+    strcpy(str, "1 67.2 -");
+    cursor = strlen(str);
+#endif
 
     /*tokenizer(stk, screen, "+ 40 4.2");
     //shunting_yard(stk, screen, " 3 2 + ");
@@ -400,17 +423,22 @@ void main() {
             del_num += 1;
         } else if (key == KEY_ENTER) {
             clear(stk);
+            clear(numstk);
             tokenizer(stk, screen, str);
             reverse(stk);
-            if(eval(stk, screen)) {
-                number = pop(stk)->x;
+            if(eval(stk, numstk, screen)) {
+                number = pop(numstk)->x;
             } else {
                 number = -1;
             }
         } else {
             last_key = chr;
             //chr = get_char(key);
-            chr = filter_char(get_character_input(&_));
+            if (key == KEY_NEG)
+                chr = ' ';
+            else
+                chr = filter_char(get_character_input(&_));
+
             if(chr != INT_MAX && cursor < len && chr != last_key){
                 str[cursor] = chr;
                 cursor += 1;
@@ -423,7 +451,7 @@ void main() {
         //draw_short(screen, 2, 8*2, i);
 
         draw_string(screen, 2, 8*4, "Res:");
-        draw_float(screen, 2 + 4*4, 8*4, number);
+        DRAW_NUM(screen, 2 + 4*4, 8*4, number);
 
 
         draw_string(screen, 2, 8*6, str);
@@ -443,5 +471,6 @@ void main() {
 
     free(str);
     freeStack(stk);
+    freeStack(numstk);
     free(screen);
 }
