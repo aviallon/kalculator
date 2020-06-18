@@ -4,11 +4,11 @@
 #define ENOUGH 8 /* max 16 bit size */ + 1 /* minus sign */ + 1 /* null byte */
 
 //void log(unsigned char* message);
-#define DRAW_NUM draw_float
-#define Num float
-#define strtonum strtof
+#define DRAW_NUM draw_signed
+#define Num int
+#define strtonum strtoi
 
-#define STACK_MAX 12
+#define STACK_MAX 2
 
 enum Operator {
     NONE,

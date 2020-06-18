@@ -97,7 +97,7 @@ unsigned getMaxTokenSize(enum TokenType tokenType){
 }
 
 int tokenizer(Stack *stack, SCREEN* screen, unsigned char* input){
-    Operator op;
+    //Operator op;
     Token temp;
     unsigned begin = 0;
     unsigned n = 1;
@@ -205,6 +205,7 @@ int eval(Stack *input_stack, Stack *output_stack, SCREEN* screen){
 
         pop_el(input_stack, &operateur);
         if(operateur.op == NONE){
+            debug_hinted(screen, operateur.x, "push_num:", DRAW_NUM);
             push(output_stack, &operateur);
         } else {
 
@@ -350,8 +351,8 @@ void main() {
     Token temp = {0, NONE};
     bool success = false;
     
-    Stack* stk;
-    Stack* numstk;
+    Stack stk;
+    Stack numstk;
     
     // must be used before the library is used, and good practice is to load it immediately on startup...
     load_library("/lib/core");
@@ -362,8 +363,8 @@ void main() {
     
     debug_str(screen, "DEBUG MODE");
     
-    stk = createStack(STACK_MAX);
-    numstk = createStack(STACK_MAX);
+    createStack(&stk, STACK_MAX);
+    createStack(&numstk, STACK_MAX);
     
     str = malloc(len);
     str[0] = '\0';
@@ -422,12 +423,12 @@ void main() {
             }
             del_num += 1;
         } else if (key == KEY_ENTER) {
-            clear(stk);
-            clear(numstk);
-            tokenizer(stk, screen, str);
-            reverse(stk);
-            if(eval(stk, numstk, screen)) {
-                number = pop(numstk)->x;
+            clear(&stk);
+            clear(&numstk);
+            tokenizer(&stk, screen, str);
+            reverse(&stk);
+            if(eval(&stk, &numstk, screen)) {
+                number = pop(&numstk)->x;
             } else {
                 number = -1;
             }
@@ -463,14 +464,16 @@ void main() {
         draw_char(screen, 2 + 3*4, 8*2, '=');
         draw_char(screen, 2+4*4, 8*2, chr);
         draw_string(screen, 2+5*4 + 20, 8*2, "STK:");
-        draw_short(screen, 2+5*4 + 20 + 4*4, 8*2, length(stk));
+        draw_short(screen, 2+5*4 + 20 + 4*4, 8*2, length(&stk));
 #endif
 
         screen_draw(screen);
     }
 
     free(str);
-    freeStack(stk);
-    freeStack(numstk);
+    free(stk.array);
+    free(numstk.array);
+    //freeStack(stk);
+    //freeStack(numstk);
     free(screen);
 }

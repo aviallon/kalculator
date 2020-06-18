@@ -16,10 +16,11 @@ struct Stack {
     int top;
     bool empty;
     int capacity; 
-    STACK_ELEMENT* array; 
+    STACK_ELEMENT array[STACK_MAX];
 };
 
-struct Stack* createStack(int capacity);
+/*struct Stack* createStack(int capacity);*/
+void createStack(struct Stack*, int capacity);
 
 bool isFull(struct Stack* stack);
 

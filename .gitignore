@@ -4,3 +4,4 @@ bin/
 *.pkg
 .idea
 cmake-build*
+compiler_update_difference.patch

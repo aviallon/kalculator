@@ -4,14 +4,20 @@
 // function to create a stack of given capacity. It initializes size of 
 // stack as 0 
 
-struct Stack* createStack(int capacity) 
+/*struct Stack* createStack(int capacity)
 { 
     struct Stack* stack = (Stack*)malloc(sizeof(Stack)); 
     stack->capacity = capacity; 
     stack->top = -1;
     stack->array = (STACK_ELEMENT*)malloc(capacity * STACK_ELEMENT_SIZE);
     return stack; 
-} 
+}*/
+
+void createStack(struct Stack* stack, int capacity) {
+    stack->capacity = capacity;
+    stack->top = -1;
+    //stack->array = (STACK_ELEMENT*)malloc(capacity * sizeof(STACK_ELEMENT));
+}
   
 // Stack is full when top is equal to the last index 
 bool isFull(struct Stack* stack) 

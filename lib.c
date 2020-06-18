@@ -4,6 +4,7 @@
 #include <limits.h>
 #include <string.h>
 #include <stdbool.h>
+#include <float.h>
 #include <stdio.h>
 #include <math.h>
 
@@ -38,7 +39,7 @@ float strtof (unsigned char* str, char** endptr) {
         ptr += 1;
     }
     
-    // Fractionnal part
+    // Fractional part
     if ( *ptr == '.' ){
         ptr += 1;
         while(1) {
@@ -138,7 +139,7 @@ void ftoa (float x, unsigned char* str) {
 //     } else {
 //         snprintf(str, 15, "%d.%04d", integer_part, frac_part);
 //     }
-    str = "BROKEN";
+//    str = "BROKEN";
     return;
 }
 
@@ -148,9 +149,9 @@ char* itoa(int x, unsigned char* str) {
 }
 
 unsigned log10u(unsigned x){
-    return (x >= 10000000u) ? 7 : (x >= 1000000u) ? 6 : 
+    return (x >= 10000000u) ? 7 : (x >= 1000000u) ? 6 :
         (x >= 100000u) ? 5 : (x >= 10000u) ? 4 :
-        (x >= 1000u) ? 3 : (x >= 100u) ? 2 : (x >= 10u) ? 1u : 0u; 
+        (x >= 1000u) ? 3 : (x >= 100u) ? 2 : (x >= 10u) ? 1u : 0u;
 }
 
 void draw_signed(SCREEN* screen, unsigned char x, unsigned char y, signed int value){
@@ -167,16 +168,16 @@ void draw_float(SCREEN* screen, unsigned char x, unsigned char y, float value){
     unsigned int integer_part;
     unsigned int frac_part;
     unsigned int integer_part_len;
-    bool sgn = (value < 0);
+    bool neg = (value < 0);
     
-    value = sgn ? -value : value;
+    value = neg ? -value : value;
     
     integer_part = (unsigned int)value;
     frac_part = ((value - (float)integer_part)*10000);
     
     integer_part_len = (log10u(integer_part)) + 1;
     
-    if(sgn){
+    if(neg){
         draw_char(screen, x, y, '-');
         x += 4;
     }
